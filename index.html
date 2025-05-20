@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nuclear Power Plant Explained</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #eef2f3;
+      color: #333;
+      line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: white;
+      padding: 2rem 0;
+      text-align: center;
+    }
+    nav {
+      background-color: #1b2a38;
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      padding: 1rem;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    nav a:hover {
+      color: #00d1b2;
+    }
+    main {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+    h2 {
+      color: #2c5364;
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 0.5rem;
+    }
+    .system-list {
+      margin-top: 2rem;
+    }
+    .diagram {
+      position: relative;
+      max-width: 1000px;
+      margin: 2rem auto;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    .diagram img {
+      width: 100%;
+      display: block;
+    }
+    .hotspot {
+      position: absolute;
+      cursor: pointer;
+      background-color: rgba(0, 0, 0, 0.6);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+      z-index: 10;
+    }
+    .hotspot:hover {
+      background-color: rgba(0, 0, 0, 0.8);
+      transform: scale(1.1);
+    }
+    .hotspot:focus {
+      outline: none;
+      background-color: rgba(0, 0, 0, 0.9);
+    }
+    .tooltip-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+    }
+    .tooltip {
+      position: absolute;
+      background-color: #fff;
+      color: #000;
+      border: 1px solid #ccc;
+      padding: 10px;
+      width: 220px;
+      z-index: 1001;
+      border-radius: 5px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: auto;
+    }
+    .tooltip.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Nuclear Power Plants: How They Work</h1>
+  </header>
+
+  <nav>
+    <a href="#overview">Overview</a>
+    <a href="game.html">Interactive Game</a>
+  </nav>
+
+  <main id="overview">
+    <h2>How Nuclear Power Plants Generate Energy</h2>
+    <p>Nuclear power plants generate electricity through a process called nuclear fission. Inside the reactor core, atoms of uranium-235 or plutonium-239 are split apart when struck by neutrons, releasing a significant amount of heat. This heat is used to convert water into steam, which then spins a turbine connected to a generator, producing electricity. Control rods are inserted or withdrawn from the reactor core to regulate the fission process and maintain a safe output. After passing through the turbine, the steam is cooled back into water in the condenser and returned into the system. This closed-loop system ensures efficient energy production with minimal greenhouse gas emissions.</p>
+  </main>
+
+  <main id="systems">
+    <h2>Systems Inside a Nuclear Power Plant</h2>
+    <div class="diagram">
+      <img src="images/nucleardiagram.png" alt="Nuclear Power Station Diagram">
+
+      <div class="hotspot" style="top: 215px; left: 10px;" tabindex="0" data-tooltip="Absorb neutrons and regulate the fission process.">Control Rods</div>
+      <div class="hotspot" style="top: 368px; left: 55px;" tabindex="0" data-tooltip="Contains nuclear fuel where fission takes place.">Core</div>
+      <div class="hotspot" style="top: 320px; left: 380px;" tabindex="0" data-tooltip="Transfers heat to convert water into steam.">Steam Gen</div>
+      <div class="hotspot" style="top: 185px; left: 447px;" tabindex="0" data-tooltip="Driven by steam to produce mechanical energy.">Turbine</div>
+      <div class="hotspot" style="top: 320px; left: 510px;" tabindex="0" data-tooltip="Converts mechanical energy into electrical energy.">Generator</div>
+      <div class="hotspot" style="top: 425px; left: 420px;" tabindex="0" data-tooltip="Cools the used steam back into water.">Condenser</div>
+      <div class="hotspot" style="top: 230px; left: 705px;" tabindex="0" data-tooltip="Releases heat into the atmosphere." data-direction="left">Cooling Tower</div>
+      <div class="hotspot" style="top: 460px; left: 895px;" tabindex="0" data-tooltip="Pulls in water from a nearby source." data-direction="left">Water Intake</div>
+      <div class="hotspot" style="top: 463px; left: 350px;" tabindex="0" data-tooltip="Moves water through the system.">Water Pump</div>
+      <div class="tooltip-container" id="tooltip-container"></div>
+    </div>
+  </main>
+
+  <script>
+    const tooltipContainer = document.getElementById('tooltip-container');
+    const hotspots = document.querySelectorAll('.hotspot');
+
+    let activeTooltip = null;
+    let hoverTimeout;
+
+    hotspots.forEach(hotspot => {
+      hotspot.addEventListener('mouseenter', () => {
+        clearTimeout(hoverTimeout);
+
+        const tooltipText = hotspot.getAttribute('data-tooltip');
+        const tooltip = document.createElement('div');
+        tooltip.className = 'tooltip visible';
+        tooltip.innerText = tooltipText;
+
+        const isLeft = hotspot.getAttribute('data-direction') === 'left';
+        if (isLeft) {
+          tooltip.style.top = `${hotspot.offsetTop - 20}px`;
+          tooltip.style.left = `${hotspot.offsetLeft - 240}px`;
+        } else {
+          tooltip.style.top = `${hotspot.offsetTop - 50}px`;
+          tooltip.style.left = `${hotspot.offsetLeft + 60}px`;
+        }
+
+        tooltip.addEventListener('mouseenter', () => {
+          clearTimeout(hoverTimeout);
+        });
+
+        tooltip.addEventListener('mouseleave', () => {
+          hideTooltip();
+        });
+
+        tooltipContainer.innerHTML = '';
+        tooltipContainer.appendChild(tooltip);
+        activeTooltip = tooltip;
+      });
+
+      hotspot.addEventListener('mouseleave', () => {
+        hoverTimeout = setTimeout(hideTooltip, 200);
+      });
+    });
+
+    function hideTooltip() {
+      if (activeTooltip) {
+        activeTooltip.remove();
+        activeTooltip = null;
+      }
+    }
+  </script>
+</body>
+</html>
